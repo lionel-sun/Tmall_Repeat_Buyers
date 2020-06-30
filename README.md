@@ -8,31 +8,41 @@
 在线推荐对于客户的定位是非常难的，尤其对于新用户。但是天猫已经积累了大量用户行为日志，可以解决这个问题。
 
 ## 小量数据跑通流程
-不可以直接随机取数据。
-应该选取一个主键（例如user id筛选一部分 user)
+采样不可以直接随机取数据。
+
+应该选取一个主键（例如user id筛选一部分 user id作为数据集)
 
 ## 数据预处理
-1，进行特征值转换，离散值转换数值。合并测试集合训练集一起做label encoder和one hot.(避免出现错误所以一起处理，test可能出现train里面没有的数值)
-2，embedding到固定纬度作为MLP输入，纬度太大不方便做MLP全连接
-3，填充缺失值，数值补全
-4，人工构造特征,抽象用户画像，增加一些字段。
-增加完用户的特征值，给商家也增加一些特征值。
-临时保存特征文件，下次可以直接使用
-模型也可以训练一半保存，checkpoint
+
+1，导入训练集和测试集将两个数据合并到同一个DF中进行接下来的处理。
+
+2，通过user id将用户profile表的信息添加到DF中。
+
+3，对每列类型进行定义（根据内容定义数据类型可以降低内存使用），处理异常值。
+
+4，日志数据按照user id分组，做不同类型统计构造关于user id的特征。
+
+5，日志数据按照merchant_id分组，做不同类型统计构造关于merchant_id的特征。
+
+6，日志数据按照（user id， merchant_id）分组，做不同类型统计构造关于（user id， merchant_id）的特征。
+
+7，使用one hot的方法处理年龄字段。
+
+#### 为DIN和DSIN模型构造sequence
+
+8，把日志数据中同一个user的数据合并到list中，增加两列一个是mechant_id的序列，一个是action type序列
 
 ## 使用传统机器学习模型
 xgboost
 lightGBM
 #### 调整超参数
-xgboost
-lightGBM
+使用GridSearchCV调整参数
 
 ## 预测结果
 Rank: Top80
 Score: 0.683473
 
 ## 使用Attention机制的DNN模型
-看一下deepctr的DIN使用案例
 DIN
 DSIN
 
